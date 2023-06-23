@@ -1,4 +1,5 @@
-import ToDoCard, {ToDo} from "./ToDoCard.tsx";
+
+import ToDoCard, {ToDo} from "./ToDoCard";
 
 type Props = {
     todos: ToDo[],

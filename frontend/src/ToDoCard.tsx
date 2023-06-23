@@ -1,8 +1,10 @@
 import './ToDoCard.css';
 import axios from "axios";
 import { useState } from "react";
+import './ToDoEdit.tsx'
+import ToDoEdit from "./ToDoEdit.tsx";
 
-type ToDo = {
+export type ToDo = {
     id: string;
     description: string;
     status: string;
@@ -13,37 +15,43 @@ type Props = {
 };
 
 export default function ToDoCard({ todo }: Props) {
-    const [todos, setTodos] = useState<ToDo[]>([]);
+    const [todoStatus, setTodoStatus] = useState<string>();
+    const [todoId] = useState<string>(todo.id);
+    const [editMode, setEditMode] = useState<boolean>(false);
+
     async function updateStatus(id: string) {
         try {
-            const response = await axios.put(`/api/todo/${id}`);
+            const response = await axios.put(`/api/todo/${id}/update`, { status: "IN_PROGRESS" });
             const updatedTodo = response.data;
-            setTodos((prevTodos) =>
-                prevTodos.map((todo) => {
-                    if (todo.id === updatedTodo.id) {
-                        return updatedTodo;
-                    } else {
-                        return todo;
-                    }
-                })
-            );
+            setTodoStatus(updatedTodo.status);
         } catch (error) {
             console.error('Error updating todo:', error);
         }
     }
 
+    const handleEditClick = () => {
+        setEditMode(true);
+    };
+
+    const handleSave = (updatedTodo: ToDo) => {
+        setTodoStatus(updatedTodo.status);
+        setEditMode(false);
+    };
+
     return (
         <section>
-            <h3>{todo.description}</h3>
-            <h3>Status: {todo.status}</h3>
+            {editMode ? (
+                <ToDoEdit todo={todo} onSave={handleSave} />
+            ) : (
+                <>
+                    <h3>{todo.description}</h3>
+                    <h3>Status: {todoStatus}</h3>
 
-            <button>Edit</button>
-            <button>Details</button>
-            <button onClick={() => updateStatus(todo.id)}>Advance</button>
-
-            {todos.map(() => (
-                <div key={todo.id}>{todo.description}</div>
-            ))}
+                    <button onClick={handleEditClick}>Edit</button>
+                    <button>Details</button>
+                    <button onClick={() => updateStatus(todoId)}>Advance</button>
+                </>
+            )}
         </section>
     );
 }

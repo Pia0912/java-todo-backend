@@ -1,16 +1,31 @@
-import Header from "./Header.tsx";
-import React, {useState} from "react";
-import ToDoGallery from './ToDoGallery.tsx';
+import Header from "./Header";
+import React, { useState, useEffect } from "react";
+import ToDoGallery from './ToDoGallery';
 import './App.css';
-import {ToDo} from "./ToDoCard.tsx";
-
-
-
+import { ToDo } from "./ToDoCard";
+import axios from "axios";
+import { v4 as uuidv4 } from 'uuid';
 
 
 export default function App() {
     const [description, setDescription] = useState<ToDo[]>([]);
     const [newTodo, setNewTodo] = useState<string>("");
+
+    useEffect(() => {
+        getTodos();
+    }, []);
+
+    function getTodos() {
+        axios.get("/api/todo")
+            .then((response) => {
+                const todosData = response.data;
+                setDescription(todosData);
+            })
+            .catch((error) => {
+                console.error("Error fetching todos:", error);
+            });
+    }
+
 
     function changeText(event: React.ChangeEvent<HTMLInputElement>) {
         const newTodo = event.target.value;
@@ -20,18 +35,24 @@ export default function App() {
     function addTodo() {
         if (newTodo.trim() !== "") {
             const newTodoItem: ToDo = {
-                id: new Date().getTime().toString(),
+                id: uuidv4(),
                 description: newTodo,
                 status: "OPEN",
             };
-            setDescription([...description, newTodoItem]);
-            setNewTodo(""); // Clear the input field
+
+            axios.post("/api/todo", newTodoItem)
+                .then((response) => {
+                    const createdTodo = response.data;
+                    setDescription([...description, createdTodo]);
+                    setNewTodo(""); // Clear the input field
+                })
+                .catch((error) => {
+                    console.error("Error creating todo:", error);
+                });
         }
     }
 
-
-return(
-
+    return (
         <div className="container">
             <h1 className="title">☑️ToDo-List</h1>
 
@@ -48,5 +69,5 @@ return(
                 <button onClick={addTodo}>Add</button>
             </div>
         </div>
-        );
+    );
 }
