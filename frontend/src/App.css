@@ -1,21 +1,18 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  margin: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+  grid-gap: 10px;
 }
+
+
 
 .title {
-  margin-top: 0;
+  grid-column: 1 / -1;
+  text-align: center;
 }
 
-.header {
-  display: flex;
-  justify-content: space-evenly;
-  width: 100%;
-}
+
 
 .main {
   flex: 1;
@@ -27,4 +24,32 @@
   justify-content: flex-end;
   width: 100%;
   padding: 1rem;
+}
+
+.todo-card{
+  border: solid 1px black;
+  border-radius: 5px;
+  height: 50px;
+  margin-bottom: 20px;
+  padding: 10px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+
+.todo-new-card{
+  display: grid;
+  gap: 5px;
+  grid-template-columns: inherit;
+
+}
+
+.todo-new-card input{
+  width: 100%;
+  padding: 0;
+
+}
+
+.todo-new-card button {
+  justify-self: end;
+
 }

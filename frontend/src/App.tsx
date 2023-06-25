@@ -1,73 +1,52 @@
 import Header from "./Header";
-import React, { useState, useEffect } from "react";
-import ToDoGallery from './ToDoGallery';
+import { useState, useEffect } from "react";
 import './App.css';
-import { ToDo } from "./ToDoCard";
 import axios from "axios";
-import { v4 as uuidv4 } from 'uuid';
+import {allPossibleTodos} from "./TodoStatus.ts";
+import {Todo} from "./ToDo.ts";
+
+
 
 
 export default function App() {
-    const [description, setDescription] = useState<ToDo[]>([]);
-    const [newTodo, setNewTodo] = useState<string>("");
 
-    useEffect(() => {
-        getTodos();
-    }, []);
+    const [todos, setTodos] = useState<Todo[]>()
 
-    function getTodos() {
-        axios.get("/api/todo")
-            .then((response) => {
-                const todosData = response.data;
-                setDescription(todosData);
+    function fetchTodos() {
+        axios.get("api/todo")
+            .then(response => {
+                setTodos(response.data)
             })
-            .catch((error) => {
-                console.error("Error fetching todos:", error);
-            });
     }
 
+    useEffect(fetchTodos, [])
 
-    function changeText(event: React.ChangeEvent<HTMLInputElement>) {
-        const newTodo = event.target.value;
-        setNewTodo(newTodo);
+    if (!todos) {
+        return "Loading..."
     }
 
-    function addTodo() {
-        if (newTodo.trim() !== "") {
-            const newTodoItem: ToDo = {
-                id: uuidv4(),
-                description: newTodo,
-                status: "OPEN",
-            };
-
-            axios.post("/api/todo", newTodoItem)
-                .then((response) => {
-                    const createdTodo = response.data;
-                    setDescription([...description, createdTodo]);
-                    setNewTodo(""); // Clear the input field
-                })
-                .catch((error) => {
-                    console.error("Error creating todo:", error);
-                });
-        }
-    }
 
     return (
-        <div className="container">
+      <>
+      <div className="container">
+
             <h1 className="title">☑️ToDo-List</h1>
 
-            <div className="header">
-                <Header />
-            </div>
 
-            <div className="main">
-                <ToDoGallery todos={description} />
-            </div>
+          {
+              allPossibleTodos.map(status => {
+                  const filteredTodos = todos.filter(todo => todo.status === status)
+                 return <Header status={status}
+                                todos={filteredTodos}
+                                onTodoItemChange={fetchTodos}
+                                key={status}/>
 
-            <div className="footer">
-                <input type="text" value={newTodo} onChange={changeText} />
-                <button onClick={addTodo}>Add</button>
-            </div>
-        </div>
-    );
+              })
+          }
+
+      </div>
+      </>
+
+
+    )
 }

@@ -1,25 +1,27 @@
-import "./Header.css"
+import ToDoCard from "./ToDoCard.tsx";
+import {Todo} from "./ToDo.ts";
+import {TodoStatus} from "./TodoStatus.ts";
+import NewTodoCard from "./NewTodoCard.tsx";
 
-export default function Header(){
 
-    return(
+type Props = {
+    status: TodoStatus,
+    todos: Todo[],
+    onTodoItemChange: () => void
+}
+
+export default function Header(props: Props) {
+    return (
         <div className="flex-container">
 
-            <div>
-                <h2>Home (All ToDos-not started)</h2>
-            </div>
-            <div>
-                <h2>Doing</h2>
-            </div>
-            <div>
-                <h2>Done</h2>
-            </div>
+            <h2>{props.status}</h2>
+            {
+                props.todos.map(todo => <ToDoCard todo={todo} key={todo.id} onTodoItemChange={props.onTodoItemChange}/>)
+            }
+            {
+                (props.status === "OPEN") && <NewTodoCard onNewTodoItemSave={props.onTodoItemChange}/>
+            }
+
         </div>
     );
 }
-
-
-
-
-
-

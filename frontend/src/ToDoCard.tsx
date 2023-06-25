@@ -1,57 +1,64 @@
-import './ToDoCard.css';
-import axios from "axios";
-import { useState } from "react";
-import './ToDoEdit.tsx'
-import ToDoEdit from "./ToDoEdit.tsx";
 
-export type ToDo = {
-    id: string;
-    description: string;
-    status: string;
-};
+import {Todo} from "./ToDo.ts";
+import axios from "axios";
+import React, {useState} from "react";
+import {TodoStatus} from "./TodoStatus.ts";
+
 
 type Props = {
-    todo: ToDo;
-};
+    todo: Todo,
+    onTodoItemChange: () => void //Callback Funktion
 
-export default function ToDoCard({ todo }: Props) {
-    const [todoStatus, setTodoStatus] = useState<string>();
-    const [todoId] = useState<string>(todo.id);
-    const [editMode, setEditMode] = useState<boolean>(false);
+}
 
-    async function updateStatus(id: string) {
-        try {
-            const response = await axios.put(`/api/todo/${id}/update`, { status: "IN_PROGRESS" });
-            const updatedTodo = response.data;
-            setTodoStatus(updatedTodo.status);
-        } catch (error) {
-            console.error('Error updating todo:', error);
-        }
+export default function ToDoCard(props: Props) {
+
+    const[description, setDescription] = useState(props.todo.description)
+
+    function changeText(event: React.ChangeEvent<HTMLInputElement>) {
+        const newDescription = event.target.value;
+        setDescription(newDescription)
+        axios.put("api/todo/" + props.todo.id,{
+            ...props.todo, // id: props.todo.id, status: props.todo.status,
+            description: newDescription,
+        } as Todo)
     }
 
-    const handleEditClick = () => {
-        setEditMode(true);
-    };
 
-    const handleSave = (updatedTodo: ToDo) => {
-        setTodoStatus(updatedTodo.status);
-        setEditMode(false);
-    };
+    function move(targetStatus: TodoStatus) {
+        axios.put("api/todo/" + props.todo.id,{
+            ...props.todo,
+            status: targetStatus
+        } as Todo)
+            .then(props.onTodoItemChange)
+    }
 
+
+    function deleteThisItem() {
+        axios.delete("api/todo/" + props.todo.id)
+            .then(props.onTodoItemChange)
+    }
     return (
-        <section>
-            {editMode ? (
-                <ToDoEdit todo={todo} onSave={handleSave} />
-            ) : (
-                <>
-                    <h3>{todo.description}</h3>
-                    <h3>Status: {todoStatus}</h3>
-
-                    <button onClick={handleEditClick}>Edit</button>
-                    <button>Details</button>
-                    <button onClick={() => updateStatus(todoId)}>Advance</button>
-                </>
-            )}
-        </section>
+        <div className="todo-card">
+            <input value={description} onInput={changeText}/>
+            {
+                (props.todo.status === "OPEN")
+                ? <div></div>
+                    : (
+                        props.todo.status === "DONE"
+                            ? <button onClick={() => move("IN_PROGRESS")}> ⇦ </button>
+                            : <button onClick={() => move("OPEN")}> ⇦ </button>
+                    )}
+            <button onClick={deleteThisItem}> 🗑️</button>
+            {
+                (props.todo.status === "DONE")
+                ? <div></div>
+                : (
+                    props.todo.status === "IN_PROGRESS"
+                    ? <button onClick={() => move("DONE")}> ⇨ </button>
+                    : <button onClick={() => move("IN_PROGRESS")}> ⇨ </button>
+                    )}
+        </div>
     );
 }
+
