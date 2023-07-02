@@ -1,55 +1,62 @@
+html,
+body {
+  height: 100%;
+  margin: 10px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
 .container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   text-align: center;
-  grid-gap: 10px;
+  grid-gap: 50px;
 }
-
 
 
 .title {
-  grid-column: 1 / -1;
-  text-align: center;
-}
-
-
-
-.main {
-  flex: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-}
-
-.footer {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-  padding: 1rem;
+  padding: 10px;
 }
 
 .todo-card{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   border: solid 1px black;
   border-radius: 5px;
   height: 50px;
-  margin-bottom: 20px;
-  padding: 10px;
-  grid-template-columns: repeat(3, 1fr);
+  padding: 15px 15px 50px;
+  margin: 25px;
 }
 
+.todo-card input {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+
+}
 
 .todo-new-card{
   display: grid;
   gap: 5px;
   grid-template-columns: inherit;
-
 }
 
 .todo-new-card input{
-  width: 100%;
+  width: 90%;
   padding: 0;
-
+  margin: 20px;
 }
 
 .todo-new-card button {
   justify-self: end;
-
 }

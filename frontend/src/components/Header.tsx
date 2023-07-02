@@ -12,16 +12,16 @@ type Props = {
 
 export default function Header(props: Props) {
     return (
-        <div className="flex-container">
-
+        <div>
             <h2>{props.status}</h2>
             {
-                props.todos.map(todo => <ToDoCard todo={todo} key={todo.id} onTodoItemChange={props.onTodoItemChange}/>)
+                props.todos.map(todo =>
+                    <ToDoCard todo={todo} key={todo.id} onTodoItemChange={props.onTodoItemChange}/>)
             }
             {
-                (props.status === "OPEN") && <NewTodoCard onNewTodoItemSave={props.onTodoItemChange}/>
+                (props.status === "OPEN") &&
+                <NewTodoCard onNewTodoItemSave={props.onTodoItemChange}/>
             }
-
         </div>
     );
 }
